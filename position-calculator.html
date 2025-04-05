@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>部位大小試算器</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      background: #f9f9f9;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .result {
+      margin-top: 20px;
+      background: #e3f3e6;
+      padding: 15px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    button {
+      padding: 10px 16px;
+      font-size: 16px;
+      margin-top: 10px;
+      border: none;
+      background-color: #0077cc;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <h2>部位大小試算器</h2>
+
+  <div class="form-group">
+    <label for="loss">最大虧損金額 ($)：</label>
+    <input type="number" id="loss" placeholder="例如：11.00" step="0.01" />
+  </div>
+
+  <div class="form-group">
+    <label for="pips">止損點數 (pips)：</label>
+    <input type="number" id="pips" placeholder="例如：150" step="0.1" />
+  </div>
+
+  <div class="form-group">
+    <label for="lots">手數 (lots)：</label>
+    <input type="number" id="lots" placeholder="例如：0.07" step="0.01" />
+  </div>
+
+  <div class="form-group">
+    <label for="pipValue">每手 pip 價值（$，預設為10）：</label>
+    <input type="number" id="pipValue" value="10" step="0.01" />
+  </div>
+
+  <button onclick="calculate()">計算</button>
+  <button onclick="resetFields()">清除</button>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    function calculate() {
+      const loss = parseFloat(document.getElementById("loss").value);
+      const pips = parseFloat(document.getElementById("pips").value);
+      const lots = parseFloat(document.getElementById("lots").value);
+      const pipValue = parseFloat(document.getElementById("pipValue").value || 10);
+      let resultText = "";
+
+      const filled = [!isNaN(loss), !isNaN(pips), !isNaN(lots)].filter(Boolean).length;
+
+      if (filled < 2) {
+        resultText = "請至少輸入其中兩個欄位進行計算。";
+      } else {
+        if (isNaN(loss)) {
+          const calcLoss = lots * pipValue * pips;
+          resultText = `最大虧損 = ${lots} 手 × ${pipValue} × ${pips} pips = <b>$${calcLoss.toFixed(2)}</b>`;
+        } else if (isNaN(pips)) {
+          const calcPips = loss / (lots * pipValue);
+          resultText = `止損點數 = $${loss} ÷ (${lots} × ${pipValue}) = <b>${calcPips.toFixed(2)} pips</b>`;
+        } else if (isNaN(lots)) {
+          const calcLots = loss / (pipValue * pips);
+          resultText = `手數 = $${loss} ÷ (${pipValue} × ${pips}) = <b>${calcLots.toFixed(2)} 手</b>`;
+        } else {
+          resultText = "請只留兩個欄位有數值，第三個將會自動計算。";
+        }
+      }
+
+      document.getElementById("result").innerHTML = resultText;
+    }
+
+    function resetFields() {
+      document.getElementById("loss").value = "";
+      document.getElementById("pips").value = "";
+      document.getElementById("lots").value = "";
+      document.getElementById("result").innerHTML = "";
+    }
+  </script>
+</body>
+</html>
