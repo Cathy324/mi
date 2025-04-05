@@ -1,161 +1,242 @@
-
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>部位大小試算器</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>風控試算工具</title>
+  
+  
   <style>
-    :root {
-      --milk-tea-bg: #fef6f0;
-      --milk-tea-primary: #d9a066;
-      --milk-tea-accent: #a67c52;
-      --milk-tea-input: #fffaf4;
-    }
-    * {
-      box-sizing: border-box;
-    }
     body {
-      font-family: "Helvetica Neue", sans-serif;
-      padding: 20px;
-      background: var(--milk-tea-bg);
-      color: #4a3b2f;
-      margin: 0;
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      padding: 1rem;
+      background: #faf3e0;
+      color: #3c2f2f;
     }
-    h2 {
-      text-align: center;
-      margin-bottom: 1rem;
-      color: var(--milk-tea-accent);
-    }
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-      background: white;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-    .form-group {
-      margin-bottom: 16px;
-    }
+
     label {
       display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
+      margin-top: 1rem;
+      font-weight: 500;
     }
+
     input {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #e0dcd8;
-      background: var(--milk-tea-input);
-      border-radius: 10px;
+      margin-top: 0.25rem;
+      padding: 0.4rem;
+      width: 160px;
+      border: 1px solid #d6c6b9;
+      border-radius: 6px;
+      background: #fffaf0;
+      color: #3c2f2f;
     }
-    .button-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    button {
-      flex: 1;
-      padding: 12px;
-      font-size: 16px;
-      border: none;
-      border-radius: 10px;
-      background-color: var(--milk-tea-primary);
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background-color: #c08640;
-    }
-    .result {
-      margin-top: 20px;
-      background: #fff2e0;
-      padding: 16px;
+
+    .section {
+      background: #fffdf7;
+      padding: 1.5rem;
       border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      margin-top: 1.5rem;
+      border: 1px solid #d6c6b9;
+    }
+
+    h1 {
+      color: #b85c38;
+    }
+
+    h2 {
+      color: #c77966;
+      margin-bottom: 1rem;
+    }
+
+    .result {
       font-weight: bold;
-      color: #5a4533;
+      color: #a25f4b;
+      margin-left: 0.5rem;
     }
-    @media screen and (max-width: 600px) {
-      .container {
-        padding: 16px;
-      }
-      h2 {
-        font-size: 1.5rem;
-      }
+
+    .warning {
+      color: #d9534f !important;
     }
-  </style>
+
+    .ok {
+      color: #5f7c3a !important;
+    }
+  
+@media (max-width: 600px) {
+  input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .section {
+    padding: 1rem;
+    border-left: none;
+    border-top: 4px solid #d9a36a;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  label {
+    font-size: 0.95rem;
+  }
+}
+</style>
+
+
+
 </head>
 <body>
-  <div class="container">
-    <h2>部位大小試算器</h2>
+  <h1>風控試算工具</h1>
 
-    <div class="form-group">
-      <label for="loss">最大虧損金額 ($)：</label>
-      <input type="number" id="loss" placeholder="例如：11.00" step="0.01" />
-    </div>
-
-    <div class="form-group">
-      <label for="pips">止損點數 (pips)：</label>
-      <input type="number" id="pips" placeholder="例如：150" step="0.1" />
-    </div>
-
-    <div class="form-group">
-      <label for="lots">手數 (lots)：</label>
-      <input type="number" id="lots" placeholder="例如：0.07" step="0.01" />
-    </div>
-
-    <div class="form-group">
-      <label for="pipValue">每手 pip 價值（$，預設為10）：</label>
-      <input type="number" id="pipValue" value="10" step="0.01" />
-    </div>
-
-    <div class="button-group">
-      <button onclick="calculate()">計算</button>
-      <button onclick="resetFields()">清除</button>
-    </div>
-
-    <div class="result" id="result"></div>
+  
+<div style="text-align:right; margin-bottom:1rem;">
+  <button onclick="openFullscreen()" style="padding:0.5rem 1rem; border:none; background-color:#b85c38; color:#fff; border-radius:8px;">全螢幕模式</button>
+</div>
+<div class="section">
+    <h2>輸入參數</h2>
+    <label>本金:
+      <input type="number" id="capital" value="1000" oninput="recalculate()">
+    </label>
+    <label>風險:
+      <input type="number" id="risk_pct" value="1.1" oninput="recalculate()">%
+    </label>
+    <label>勝率:
+      <input type="number" id="winrate" value="56" oninput="recalculate()">%
+    </label>
+    <label>風險報酬比:
+      <input type="number" id="rr_ratio" value="3" oninput="recalculate()">
+    </label>
+    <label>部分止盈比例:
+      <input type="number" id="partial_tp" value="0.5" step="0.1" oninput="recalculate()">%
+    </label>
+    <label>每日目標收益:
+      <input type="number" id="daily_target" value="75" oninput="recalculate()">
+    </label>
+    <label>容忍度:
+      <input type="number" id="tolerance_pct" value="5" oninput="recalculate()">% 
+    </label>
   </div>
 
+  <div class="section">
+  <h2>基本條件</h2>
+  <p>單筆最大虧損: <span class="result" id="max_loss">-</span></p>
+  <p>每日最大虧損容忍度: <span class="result" id="daily_limit">-</span> <span>ex: 日薪1500</span></p>
+  <p>每筆交易期望值: <span class="result" id="expectancy">-</span></p>
+  <p>最大允許交易次數: <span class="result" id="max_trades">-</span></p>
+</div>
+
+<div class="section">
+  <h2>達成目標需求</h2>
+  <p>每日需交易次數: <span class="result" id="needed_trades">-</span></p>
+  <p>每日交易最多虧損: <span class="result" id="needed_loss">-</span></p>
+  <p>目標期望值: <span class="result" id="target_expectancy">-</span></p>
+</div>
+
+  <div class="section">
+    <h2>調整建議</h2>
+    <p>本金: <span class="result" id="advice_capital">-</span></p>
+    <p>最大虧損容忍度: <span class="result" id="advice_tolerance">-</span></p>
+    <p>勝率: <span class="result" id="advice_winrate">-</span></p>
+    <p>風報比: <span class="result" id="advice_rr">-</span></p>
+  </div>
+
+  
   <script>
-    function calculate() {
-      const loss = parseFloat(document.getElementById("loss").value);
-      const pips = parseFloat(document.getElementById("pips").value);
-      const lots = parseFloat(document.getElementById("lots").value);
-      const pipValue = parseFloat(document.getElementById("pipValue").value || 10);
-      let resultText = "";
+    function recalculate() {
+      const capital = parseFloat(document.getElementById("capital").value);
+      const risk_pct = parseFloat(document.getElementById("risk_pct").value) / 100;
+      const winrate = parseFloat(document.getElementById("winrate").value) / 100;
+      const rr = parseFloat(document.getElementById("rr_ratio").value);
+      const partial = parseFloat(document.getElementById("partial_tp").value);
+      const daily_target = parseFloat(document.getElementById("daily_target").value);
+      const tolerance_pct = parseFloat(document.getElementById("tolerance_pct").value) / 100;
 
-      const filled = [!isNaN(loss), !isNaN(pips), !isNaN(lots)].filter(Boolean).length;
+      const max_loss = capital * risk_pct;
+      const daily_limit = capital * tolerance_pct;
 
-      if (filled < 2) {
-        resultText = "請至少輸入其中兩個欄位進行計算。";
-      } else {
-        if (isNaN(loss)) {
-          const calcLoss = lots * pipValue * pips;
-          resultText = `最大虧損 = ${lots} 手 × ${pipValue} × ${pips} pips = <b>$${calcLoss.toFixed(2)}</b>`;
-        } else if (isNaN(pips)) {
-          const calcPips = loss / (lots * pipValue);
-          resultText = `止損點數 = $${loss} ÷ (${lots} × ${pipValue}) = <b>${calcPips.toFixed(2)} pips</b>`;
-        } else if (isNaN(lots)) {
-          const calcLots = loss / (pipValue * pips);
-          resultText = `手數 = $${loss} ÷ (${pipValue} × ${pips}) = <b>${calcLots.toFixed(2)} 手</b>`;
-        } else {
-          resultText = "請只留兩個欄位有數值，第三個將會自動計算。";
-        }
+      const expectancy = (rr * max_loss * winrate) + (max_loss * partial * winrate) - (max_loss * (1 - winrate));
+      const max_trades = daily_limit / max_loss;
+      const needed_trades = daily_target / expectancy;
+      const needed_loss = needed_trades * max_loss;
+      const target_expectancy = daily_target / needed_trades;
+
+      document.getElementById("max_loss").textContent = "$" + (max_loss.toFixed(2));
+      document.getElementById("daily_limit").textContent = "$" + (daily_limit.toFixed(2));
+      document.getElementById("expectancy").textContent = "$" + (expectancy.toFixed(2));
+      document.getElementById("max_trades").textContent = (max_trades.toFixed(1)) + " 次";
+      document.getElementById("needed_trades").textContent = (needed_trades.toFixed(1)) + " 次";
+      document.getElementById("needed_loss").textContent = "$" + (needed_loss.toFixed(2));
+      document.getElementById("target_expectancy").textContent = "$" + (target_expectancy.toFixed(2));
+    function setAdvice(id, condition, message) {
+        const el = document.getElementById(id);
+        el.textContent = condition ? message : "無需調整";
+        el.className = "result " + (condition ? "warning" : "ok");
       }
 
-      document.getElementById("result").innerHTML = resultText;
+      setAdvice("advice_capital", needed_trades > max_trades, "增加本金");
+      setAdvice("advice_tolerance", needed_loss > daily_limit, "增加最大虧損容忍度");
+      setAdvice("advice_winrate", expectancy < target_expectancy, "提高勝率");
+      setAdvice("advice_rr", expectancy < target_expectancy, "提高風報比");
     }
 
-    function resetFields() {
-      document.getElementById("loss").value = "";
-      document.getElementById("pips").value = "";
-      document.getElementById("lots").value = "";
-      document.getElementById("result").innerHTML = "";
-    }
+    window.onload = recalculate;
   </script>
+
+
+
+
+<script>
+  function renderChart(expectancy, target, trades, needed) {
+    const ctx = document.getElementById('chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['每筆期望值', '目標期望值', '最大交易次數', '所需交易次數'],
+        datasets: [{
+          label: '統計數據',
+          data: [expectancy, target, trades, needed],
+          backgroundColor: [
+            '#d99b64',
+            '#c08457',
+            '#a8775d',
+            '#e3ba8b'
+          ],
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+</script>
+
+<script>
+  function openFullscreen() {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+      elem.msRequestFullscreen();
+    }
+  }
+</script>
 </body>
 </html>
