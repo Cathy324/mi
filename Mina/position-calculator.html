@@ -1,85 +1,124 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>部位大小試算器</title>
   <style>
+    :root {
+      --milk-tea-bg: #fef6f0;
+      --milk-tea-primary: #d9a066;
+      --milk-tea-accent: #a67c52;
+      --milk-tea-input: #fffaf4;
+    }
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: sans-serif;
+      font-family: "Helvetica Neue", sans-serif;
       padding: 20px;
-      max-width: 600px;
-      margin: auto;
-      background: #f9f9f9;
+      background: var(--milk-tea-bg);
+      color: #4a3b2f;
+      margin: 0;
     }
     h2 {
       text-align: center;
       margin-bottom: 1rem;
+      color: var(--milk-tea-accent);
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     }
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 16px;
     }
     label {
-      font-weight: bold;
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
+      font-weight: 600;
     }
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      border: 1px solid #e0dcd8;
+      background: var(--milk-tea-input);
+      border-radius: 10px;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    button {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background-color: var(--milk-tea-primary);
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #c08640;
     }
     .result {
       margin-top: 20px;
-      background: #e3f3e6;
-      padding: 15px;
-      border-radius: 8px;
+      background: #fff2e0;
+      padding: 16px;
+      border-radius: 12px;
       font-weight: bold;
+      color: #5a4533;
     }
-    button {
-      padding: 10px 16px;
-      font-size: 16px;
-      margin-top: 10px;
-      border: none;
-      background-color: #0077cc;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #005fa3;
+    @media screen and (max-width: 600px) {
+      .container {
+        padding: 16px;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>部位大小試算器</h2>
+  <div class="container">
+    <h2>部位大小試算器</h2>
 
-  <div class="form-group">
-    <label for="loss">最大虧損金額 ($)：</label>
-    <input type="number" id="loss" placeholder="例如：11.00" step="0.01" />
+    <div class="form-group">
+      <label for="loss">最大虧損金額 ($)：</label>
+      <input type="number" id="loss" placeholder="例如：11.00" step="0.01" />
+    </div>
+
+    <div class="form-group">
+      <label for="pips">止損點數 (pips)：</label>
+      <input type="number" id="pips" placeholder="例如：150" step="0.1" />
+    </div>
+
+    <div class="form-group">
+      <label for="lots">手數 (lots)：</label>
+      <input type="number" id="lots" placeholder="例如：0.07" step="0.01" />
+    </div>
+
+    <div class="form-group">
+      <label for="pipValue">每手 pip 價值（$，預設為10）：</label>
+      <input type="number" id="pipValue" value="10" step="0.01" />
+    </div>
+
+    <div class="button-group">
+      <button onclick="calculate()">計算</button>
+      <button onclick="resetFields()">清除</button>
+    </div>
+
+    <div class="result" id="result"></div>
   </div>
-
-  <div class="form-group">
-    <label for="pips">止損點數 (pips)：</label>
-    <input type="number" id="pips" placeholder="例如：150" step="0.1" />
-  </div>
-
-  <div class="form-group">
-    <label for="lots">手數 (lots)：</label>
-    <input type="number" id="lots" placeholder="例如：0.07" step="0.01" />
-  </div>
-
-  <div class="form-group">
-    <label for="pipValue">每手 pip 價值（$，預設為10）：</label>
-    <input type="number" id="pipValue" value="10" step="0.01" />
-  </div>
-
-  <button onclick="calculate()">計算</button>
-  <button onclick="resetFields()">清除</button>
-
-  <div class="result" id="result"></div>
 
   <script>
     function calculate() {
